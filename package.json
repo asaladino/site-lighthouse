@@ -8,5 +8,9 @@
   "license": "MIT",
   "devDependencies": {
     "lighthouse": "^2.7.0"
+  },
+  "dependencies": {
+    "lighthouse-logger": "latest",
+    "chrome-launcher": "latest"
   }
 }

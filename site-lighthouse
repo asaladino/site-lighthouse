@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const lighthouse = require('lighthouse');
+const ChromeLauncher = require('chrome-launcher');
+const Printer = require('lighthouse/lighthouse-cli/printer');
+
+function launchChromeAndRunLighthouse(url, flags = {}, config = null) {
+    return ChromeLauncher.launch({
+        chromeFlags: ["--headless"]
+    }).then(chrome => {
+        flags.port = chrome.port;
+        return lighthouse(url, flags, config).then(results =>
+            chrome.kill().then(() => results));
+    });
+}
+
+const flags = {
+};
+
+console.log('starting');
+launchChromeAndRunLighthouse('https://codingsimply.com', flags).then(results => {
+    // Use results!
+    const resolvedPath = './output/';
+
+    // const artifacts = results.artifacts;
+    delete results.artifacts;
+
+    Printer.write(results, 'html', resolvedPath + 'report.html').then(_ => {
+        console.log('done saving html');
+    });
+
+    Printer.write(results, 'json', resolvedPath + 'report.json').then(_ => {
+        console.log('done saving json');
+    });
+
+    console.log('done');
+});
