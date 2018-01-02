@@ -1,37 +1,35 @@
 #!/usr/bin/env node
 
-const lighthouse = require('lighthouse');
-const ChromeLauncher = require('chrome-launcher');
-const Printer = require('lighthouse/lighthouse-cli/printer');
+const commandLineArgs = require('command-line-args');
+const getUsage = require('command-line-usage');
 
-function launchChromeAndRunLighthouse(url, flags = {}, config = null) {
-    return ChromeLauncher.launch({
-        chromeFlags: ["--headless"]
-    }).then(chrome => {
-        flags.port = chrome.port;
-        return lighthouse(url, flags, config).then(results =>
-            chrome.kill().then(() => results));
+const OptionsRepository = require('./src/Repository/OptionsRepository');
+
+const LighthouseService = require('./src/Service/LighthouseService');
+
+const menu = require('./src/Model/Menu');
+const Progress = require('./src/Model/Progress');
+const Args = require('./src/Model/Args');
+const ProgressUtility = require('./src/Utility/ProgressUtility');
+
+
+let args = new Args(commandLineArgs(menu[1]['optionList']));
+
+if (args.shouldShowHelp()) {
+    console.log(getUsage(menu));
+} else {
+    // Load the option.
+    let optionsRepository = new OptionsRepository(args);
+    let option = optionsRepository.getOption();
+
+    const lighthouseService = new LighthouseService(option, args);
+
+    let bar;
+    lighthouseService.start(count => {
+        bar = ProgressUtility.build(count);
+    }, /** @type Progress */ progress => {
+        bar.tick(1, {message: progress.url.url});
+    }).then(() => {
+        console.log('Start Lighthouse');
     });
 }
-
-const flags = {
-};
-
-console.log('starting');
-launchChromeAndRunLighthouse('https://codingsimply.com', flags).then(results => {
-    // Use results!
-    const resolvedPath = './output/';
-
-    // const artifacts = results.artifacts;
-    delete results.artifacts;
-
-    Printer.write(results, 'html', resolvedPath + 'report.html').then(_ => {
-        console.log('done saving html');
-    });
-
-    Printer.write(results, 'json', resolvedPath + 'report.json').then(_ => {
-        console.log('done saving json');
-    });
-
-    console.log('done');
-});

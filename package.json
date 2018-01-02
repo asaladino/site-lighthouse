@@ -10,7 +10,10 @@
     "lighthouse": "^2.7.0"
   },
   "dependencies": {
-    "lighthouse-logger": "latest",
-    "chrome-launcher": "latest"
+    "ascii-progress": "^1.0.5",
+    "chrome-launcher": "latest",
+    "command-line-args": "^4.0.7",
+    "command-line-usage": "^4.0.2",
+    "lighthouse-logger": "latest"
   }
 }
