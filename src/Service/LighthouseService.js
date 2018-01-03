@@ -3,6 +3,7 @@ const lighthouse = require('lighthouse');
 
 const Printer = require('lighthouse/lighthouse-cli/printer');
 const UrlsRepository = require('../Repository/UrlsRepository');
+const OptionsRepository = require('../Repository/OptionsRepository');
 const Progress = require('../Model/Progress');
 const Url = require('../Model/Url');
 const path = require("path");
@@ -11,7 +12,9 @@ const fs = require("fs");
 class LighthouseService {
 
     constructor(option, args) {
-        this.option = option;
+        this.optionsRepository = new OptionsRepository(args);
+        this.urlsRepository = new UrlsRepository(this.option, this.args);
+        this.option = this.optionsRepository.getOption();
         this.args = args;
         this.createOutputFolder();
     }
@@ -25,9 +28,7 @@ class LighthouseService {
     async runReports(start = count => {}, update = progress => {}, chrome) {
         let flags = {};
         flags.port = chrome.port;
-        // Load the urls to test.
-        let urlsRepository = new UrlsRepository(this.option, this.args);
-        let urls = urlsRepository.findForRange();
+        let urls = this.urlsRepository.findForRange();
         start(urls.length);
         for (let url of urls) {
             let results = await lighthouse(url.url, flags);
@@ -38,9 +39,9 @@ class LighthouseService {
     }
 
     /**
-     *
+     * Print html and json reports.
      * @param results {*}
-     * @param url Url
+     * @param url {Url}
      * @returns {Promise<void>}
      */
     async printReport(results, url) {
