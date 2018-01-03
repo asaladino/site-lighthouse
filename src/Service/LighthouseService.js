@@ -11,11 +11,11 @@ const fs = require("fs");
 
 class LighthouseService {
 
-    constructor(option, args) {
-        this.optionsRepository = new OptionsRepository(args);
-        this.urlsRepository = new UrlsRepository(this.option, this.args);
-        this.option = this.optionsRepository.getOption();
+    constructor(args) {
         this.args = args;
+        this.optionsRepository = new OptionsRepository(this.args);
+        this.option = this.optionsRepository.getOption();
+        this.urlsRepository = new UrlsRepository(this.option, this.args);
         this.createOutputFolder();
     }
 
