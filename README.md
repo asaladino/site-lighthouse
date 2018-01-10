@@ -8,7 +8,7 @@ If you haven't crawled the site be sure to do that first with site-index.
 
 ```
 ./site-index --verbose --html --domain "codingsimply.com" --type crawl --output "/path/to/reports/directory"
-./site-lighthouse  --verbose --domain "codingsimply.com"  --output "/path/to/reports/directory"
+./site-lighthouse --verbose --domain "codingsimply.com" --output "/path/to/reports/directory"
 ```
 
 Domain and output folder are required parameters. To see a list of parameters, run
