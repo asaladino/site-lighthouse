@@ -1,14 +1,19 @@
+/**
+ * Url found on the site.
+ */
 class Url {
-    constructor(name, url, fragment) {
-        this.name = name;
-        this.url = url;
-        this.fragment = fragment;
-        this.errorCount = 0;
-        this.tested = false;
-    }
-
-    addError() {
-        this.errorCount++;
+    constructor(entry) {
+        /**
+         * Kind of like a id for file names and look up.
+         * @type {string}
+         */
+        this.name = '';
+        /**
+         * Full url found on the site.
+         * @type {string}
+         */
+        this.url = '';
+        Object.assign(this, entry);
     }
 }
 
