@@ -33,10 +33,17 @@ class LighthouseService {
         for (let url of urls) {
             let results = await lighthouse(url.url, flags);
             await this.printReport(results, url);
-            this.emitProgress(url);
+            this.emitProgress('checking: ' + this.shortenUrl(url.url));
         }
         this.emitComplete();
         chrome.kill();
+    }
+
+    shortenUrl(url) {
+        if(url.length > 20) {
+            return '...' + url.substring(url.length - 20, url.length);
+        }
+        return url;
     }
 
     /**
@@ -47,7 +54,7 @@ class LighthouseService {
      */
     async printReport(results, url) {
         delete results.artifacts;
-        await Printer.write(results, 'html', path.join(this.folder, url.name + '.html'));
+        // await Printer.write(results, 'html', path.join(this.folder, url.name + '.html'));
         await Printer.write(results, 'json', path.join(this.folder, url.name + '.json'));
     }
 
@@ -83,7 +90,7 @@ class LighthouseService {
 
     /**
      * Emits that progress event.
-     * @param url {Url} that is currently having its content extracted from.
+     * @param url {string} that is currently having its content extracted from.
      */
     emitProgress(url) {
         this.events.forEach((callback, event) => {

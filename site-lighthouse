@@ -15,14 +15,15 @@ if (args.shouldShowHelp()) {
     args.output.doesFolderExist();
     const lighthouseService = new LighthouseService(args);
     let bar;
+    console.log('\nStarting Lighthouse');
     lighthouseService.on('start', urls => {
         if (args.verbose) {
             bar = ProgressUtility.build(urls.length);
         }
-    }).on('progress', url => {
+    }).on('progress', message => {
         if (args.verbose) {
-            bar.tick(1, {message: url.url});
+            bar.tick(1, {message: message});
         }
-    }).on('complete', () => console.log('Done'));
+    }).on('complete', () => console.log('\nDone'));
     lighthouseService.start().then();
 }
