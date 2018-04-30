@@ -28,22 +28,17 @@ class LighthouseService {
     async runReports(chrome) {
         let flags = {};
         flags.port = chrome.port;
-        let urls = this.urlsRepository.findForRange();
+        let urls = this.urlsRepository.findForRange().filter(url => {
+            return !fs.existsSync(path.join(this.folder, url.name + '.json'));
+        });
         this.emitStart(urls);
         for (let url of urls) {
             let results = await lighthouse(url.url, flags);
             await this.printReport(results, url);
-            this.emitProgress('checking: ' + this.shortenUrl(url.url));
+            this.emitProgress('checking: ' + url.name + '.json');
         }
         this.emitComplete();
         chrome.kill();
-    }
-
-    shortenUrl(url) {
-        if(url.length > 20) {
-            return '...' + url.substring(url.length - 20, url.length);
-        }
-        return url;
     }
 
     /**
@@ -54,10 +49,12 @@ class LighthouseService {
      */
     async printReport(results, url) {
         delete results.artifacts;
-        // await Printer.write(results, 'html', path.join(this.folder, url.name + '.html'));
         await Printer.write(results, 'json', path.join(this.folder, url.name + '.json'));
     }
 
+    /**
+     * Create the output folder if it doesn't exist.
+     */
     createOutputFolder() {
         this.folder = path.join(this.args.output.filename, this.args.getSiteName(), 'lighthouse');
         if (!fs.existsSync(this.folder)) {
