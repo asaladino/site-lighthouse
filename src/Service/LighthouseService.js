@@ -21,8 +21,9 @@ class LighthouseService {
 
     async start() {
         ChromeLauncher.launch({
-            chromeFlags: ["--headless"]
-        }).then(chrome => this.runReports(chrome));
+            chromeFlags: ['--headless', '--disable-gpu', '--no-sandbox']
+        }).then(chrome => this.runReports(chrome))
+            .catch(reason => console.log(reason));
     }
 
     async runReports(chrome) {
