@@ -1,28 +1,29 @@
-
 const LighthouseService = require('../Service/LighthouseService');
-const ProgressUtility = require('../Utility/ProgressUtility');
 
 class LighthouseController {
 
     constructor(args) {
         this.args = args;
+        this.logger = new (require('../Utility/Logger'))(args);
     }
 
     start() {
         return new Promise((resolve, reject) => {
             this.args.output.doesFolderExist();
             const lighthouseService = new LighthouseService(this.args);
-            let bar;
-            lighthouseService.on('start', urls => {
+            lighthouseService.on('start', progress => {
+                this.logger.report(progress.toLog());
                 if (this.args.verbose) {
-                    bar = ProgressUtility.build(urls.length);
+                    console.log(progress.toString());
                 }
-            }).on('progress', message => {
+            }).on('progress', progress => {
+                this.logger.report(progress.toLog());
                 if (this.args.verbose) {
-                    bar.tick(1, {message: message});
+                    console.log(progress.toString());
                 }
-            }).on('complete', () => {
-                console.log('\nDone');
+            }).on('complete', progress => {
+                this.logger.report(progress.toLog());
+                console.log(progress.toString());
                 resolve();
             });
             lighthouseService.start().then();

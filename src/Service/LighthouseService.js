@@ -5,6 +5,7 @@ const Printer = require('lighthouse/lighthouse-cli/printer');
 const UrlsRepository = require('../Repository/UrlsRepository');
 const OptionsRepository = require('../Repository/OptionsRepository');
 const Url = require('../Model/Url');
+const Progress = require('../Model/Progress');
 const path = require("path");
 const fs = require("fs");
 
@@ -32,13 +33,16 @@ class LighthouseService {
         let urls = this.urlsRepository.findForRange().filter(url => {
             return !fs.existsSync(path.join(this.folder, url.name + '.json'));
         });
-        this.emitStart(urls);
+        let progress = new Progress(null, urls.length);
+
+        this.emitStart(progress);
         for (let url of urls) {
             let results = await lighthouse(url.url, flags);
             await this.printReport(results, url);
-            this.emitProgress('checking: ' + url.name + '.json');
+            progress.update(url);
+            this.emitProgress(progress);
         }
-        this.emitComplete();
+        this.emitComplete(progress);
         chrome.kill();
     }
 
@@ -76,35 +80,36 @@ class LighthouseService {
 
     /**
      * Emits that start event.
-     * @param urls {[Url]} found at start.
+     * @param progress {Progress} found at start.
      */
-    emitStart(urls) {
+    emitStart(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'start') {
-                callback(urls);
+                callback(progress);
             }
         });
     }
 
     /**
      * Emits that progress event.
-     * @param url {string} that is currently having its content extracted from.
+     * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitProgress(url) {
+    emitProgress(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'progress') {
-                callback(url);
+                callback(progress);
             }
         });
     }
 
     /**
      * Emits that complete event when service has finished.
+     * @param progress {Progress} that we be done.
      */
-    emitComplete() {
+    emitComplete(progress) {
         this.events.forEach((callback, event) => {
             if (event === 'complete') {
-                callback();
+                callback(progress);
             }
         });
     }

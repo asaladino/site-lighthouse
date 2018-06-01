@@ -1,13 +1,13 @@
 {
   "name": "site-lighthouse",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Loops through a bunch of urls and runs a lighthouse report on them.",
   "main": "site-lighthouse",
   "repository": "https://github.com/asaladino/site-lighthouse",
   "author": "Adam Saladino<adam@codingsimply.com>",
   "license": "MIT",
   "dependencies": {
-    "ascii-progress": "^1.0.5",
+    "winston": "^3.0.0-rc5",
     "chrome-launcher": "latest",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
