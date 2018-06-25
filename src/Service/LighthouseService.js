@@ -1,5 +1,6 @@
 const ChromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
+const lighthouseDefaultConfig = require('../Config/LighthouseDefault');
 
 const Printer = require('lighthouse/lighthouse-cli/printer');
 const UrlsRepository = require('../Repository/UrlsRepository');
@@ -30,20 +31,21 @@ class LighthouseService {
     async runReports(chrome) {
         let flags = {};
         flags.port = chrome.port;
-        let urls = this.urlsRepository.findForRange().filter(url => {
+        let urls = this.urlsRepository.findAll().filter(url => {
             return !fs.existsSync(path.join(this.folder, url.name + '.json'));
         });
         let progress = new Progress(null, urls.length);
 
         this.emitStart(progress);
         for (let url of urls) {
-            let results = await lighthouse(url.url, flags);
+            let results = await lighthouse(url.url, flags, lighthouseDefaultConfig);
             await this.printReport(results, url);
             progress.update(url);
             this.emitProgress(progress);
         }
-        this.emitComplete(progress);
-        chrome.kill();
+
+        this.emitComplete(new Progress(null, urls.length));
+        await chrome.kill();
     }
 
     /**

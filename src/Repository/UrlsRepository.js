@@ -34,6 +34,12 @@ class UrlsRepository {
             .slice(startUrl, endUrl)
             .map(entry => new Url(entry));
     }
+
+    findAll() {
+        let urlsFile = path.join(this.args.output.filename, this.args.getSiteName(), 'urls', 'urls.json');
+        return JSON.parse(fs.readFileSync(urlsFile).toString())
+            .map(entry => new Url(entry));
+    }
 }
 
 module.exports = UrlsRepository;
