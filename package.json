@@ -17,12 +17,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "winston": "latest",
-    "chrome-launcher": "latest",
-    "command-line-args": "latest",
-    "command-line-usage": "latest",
-    "lighthouse-logger": "latest",
-    "lighthouse": "latest"
+    "winston": "^3.2.1",
+    "chrome-launcher": "^0.10.5",
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^5.0.5",
+    "lighthouse-logger": "^1.2.0",
+    "lighthouse": "^4.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
