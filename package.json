@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node ./bin/site-lighthouse",
     "build": "babel --minified --verbose src -d lib -s",
-    "watch": "babel --watch --verbose --minified src -d lib -s",
+    "watch": "babel --watch --verbose src -d lib -s",
     "babel": "babel --help",
     "assets": "",
     "prepublish": "npm run build",
@@ -19,8 +19,8 @@
   "dependencies": {
     "winston": "^3.2.1",
     "chrome-launcher": "^0.10.5",
-    "command-line-args": "^5.1.1",
-    "command-line-usage": "^5.0.5",
+    "command-line-args": "^4.0.7",
+    "command-line-usage": "^4.0.2",
     "lighthouse-logger": "^1.2.0",
     "lighthouse": "^4.3.0"
   },

@@ -1,18 +1,28 @@
-const ChromeLauncher = require('chrome-launcher');
-const lighthouse = require('lighthouse');
-const lighthouseDefaultConfig = require('../Config/LighthouseDefault');
+// @flow
+import * as ChromeLauncher from "chrome-launcher";
+import lighthouse from "lighthouse";
 
-const Printer = require('lighthouse/lighthouse-cli/printer');
-const UrlsRepository = require('../Repository/UrlsRepository');
-const OptionsRepository = require('../Repository/OptionsRepository');
-const Url = require('../Model/Url');
-const Progress = require('../Model/Progress');
-const path = require("path");
-const fs = require("fs");
+import lighthouseDefaultConfig from "../Config/LighthouseDefault";
+import Printer from "lighthouse/lighthouse-cli/printer";
+import UrlsRepository from "../Repository/UrlsRepository";
+import OptionsRepository from "../Repository/OptionsRepository";
+import Args from "../Model/Args";
+import Option from "../Model/Option";
+import Url from "../Model/Url";
+import Progress from "../Model/Progress";
+import path from "path";
+import fs from "fs";
 
-class LighthouseService {
+export default class LighthouseService {
 
-    constructor(args) {
+    events: Map<string, function>;
+    args: Args;
+    optionsRepository: OptionsRepository;
+    urlsRepository: UrlsRepository;
+    option: Option;
+    folder: string;
+
+    constructor(args: Args) {
         this.events = new Map();
         this.args = args;
         this.optionsRepository = new OptionsRepository(this.args);
@@ -28,7 +38,7 @@ class LighthouseService {
             .catch(reason => console.log(reason));
     }
 
-    async runReports(chrome) {
+    async runReports(chrome: any) {
         let flags = {};
         flags.port = chrome.port;
         let urls = this.urlsRepository.findAll().filter(url => {
@@ -38,25 +48,14 @@ class LighthouseService {
 
         this.emitStart(progress);
         for (let url of urls) {
-            let results = await lighthouse(url.url, flags, lighthouseDefaultConfig);
-            await this.printReport(results, url);
+            let results = await lighthouse(url.url, flags);
+            await Printer.write(JSON.stringify(results), 'json', path.join(this.folder, url.name + '.json'));
             progress.update(url);
             this.emitProgress(progress);
         }
 
         this.emitComplete(new Progress(null, urls.length));
         await chrome.kill();
-    }
-
-    /**
-     * Print html and json reports.
-     * @param results {*}
-     * @param url {Url}
-     * @returns {Promise<void>}
-     */
-    async printReport(results, url) {
-        delete results.artifacts;
-        await Printer.write(results, 'json', path.join(this.folder, url.name + '.json'));
     }
 
     /**
@@ -75,7 +74,7 @@ class LighthouseService {
      * @param callback {Function} called when the event is emitted.
      * @returns {LighthouseService} for chaining.
      */
-    on(event, callback) {
+    on(event: string, callback: function) {
         this.events.set(event, callback);
         return this;
     }
@@ -84,7 +83,7 @@ class LighthouseService {
      * Emits that start event.
      * @param progress {Progress} found at start.
      */
-    emitStart(progress) {
+    emitStart(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'start') {
                 callback(progress);
@@ -96,7 +95,7 @@ class LighthouseService {
      * Emits that progress event.
      * @param progress {Progress} that is currently having its content extracted from.
      */
-    emitProgress(progress) {
+    emitProgress(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'progress') {
                 callback(progress);
@@ -108,7 +107,7 @@ class LighthouseService {
      * Emits that complete event when service has finished.
      * @param progress {Progress} that we be done.
      */
-    emitComplete(progress) {
+    emitComplete(progress: Progress) {
         this.events.forEach((callback, event) => {
             if (event === 'complete') {
                 callback(progress);
@@ -116,5 +115,3 @@ class LighthouseService {
         });
     }
 }
-
-module.exports = LighthouseService;
