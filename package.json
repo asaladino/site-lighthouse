@@ -1,6 +1,6 @@
 {
   "name": "site-lighthouse",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Loops through a bunch of urls and runs a lighthouse report on them.",
   "main": "./bin/site-lighthouse",
   "repository": "https://github.com/asaladino/site-lighthouse",
