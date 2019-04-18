@@ -1,17 +1,38 @@
 {
   "name": "site-lighthouse",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Loops through a bunch of urls and runs a lighthouse report on them.",
-  "main": "site-lighthouse",
+  "main": "./bin/site-lighthouse",
   "repository": "https://github.com/asaladino/site-lighthouse",
   "author": "Adam Saladino<adam@codingsimply.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node ./bin/site-lighthouse",
+    "build": "babel --minified --verbose src -d lib -s",
+    "watch": "babel --watch --verbose src -d lib -s",
+    "babel": "babel --help",
+    "assets": "",
+    "prepublish": "npm run build",
+    "flow": "flow",
+    "test": "jest"
+  },
   "dependencies": {
-    "winston": "^3.0.0-rc5",
-    "chrome-launcher": "latest",
+    "winston": "^3.2.1",
+    "chrome-launcher": "^0.10.5",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
-    "lighthouse-logger": "latest",
-    "lighthouse": "^2.7.0"
+    "lighthouse-logger": "^1.2.0",
+    "lighthouse": "^4.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.4.3",
+    "@babel/eslint-plugin-development": "^1.0.1",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-flow": "^7.0.0",
+    "chardet": "^0.7.0",
+    "circular-json": "^0.5.9",
+    "flow-bin": "^0.91.0",
+    "jest": "^24.0.0"
   }
 }
