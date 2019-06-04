@@ -22,7 +22,7 @@
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
     "lighthouse-logger": "^1.2.0",
-    "lighthouse": "^4.3.0"
+    "lighthouse": "^5.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

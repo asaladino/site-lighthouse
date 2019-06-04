@@ -8,7 +8,6 @@ import UrlsRepository from "../Repository/UrlsRepository";
 import OptionsRepository from "../Repository/OptionsRepository";
 import Args from "../Model/Args";
 import Option from "../Model/Option";
-import Url from "../Model/Url";
 import Progress from "../Model/Progress";
 import path from "path";
 import fs from "fs";
@@ -45,10 +44,9 @@ export default class LighthouseService {
             return !fs.existsSync(path.join(this.folder, url.name + '.json'));
         });
         let progress = new Progress(null, urls.length);
-
         this.emitStart(progress);
         for (let url of urls) {
-            let results = await lighthouse(url.url, flags);
+            let results = await lighthouse(url.url, flags, lighthouseDefaultConfig);
             await Printer.write(JSON.stringify(results), 'json', path.join(this.folder, url.name + '.json'));
             progress.update(url);
             this.emitProgress(progress);
